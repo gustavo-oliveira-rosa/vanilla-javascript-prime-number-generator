@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Números Primos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 25px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #2575fc;
+        }
+
+        .count {
+            background-color: #f0f8ff;
+            color: #2575fc;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .primes-container {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+        }
+
+        .primes-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prime-number {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6a11cb;
+            font-weight: 500;
+        }
+
+        .error {
+            color: #e74c3c;
+            background-color: #ffeaea;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .info-section {
+            background-color: #f0f8ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 4px solid #2575fc;
+        }
+
+        .info-section h3 {
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            input, button {
+                width: 100%;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerador de Números Primos</h1>
+            <p class="subtitle">Encontre todos os números primos até um determinado limite</p>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="number" id="limitInput" placeholder="Digite o limite (ex: 100)" min="2" max="100000">
+                    <button id="generateBtn">Gerar Números Primos</button>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Números Primos Encontrados</h2>
+                    <div class="count" id="count">0</div>
+                </div>
+                <div class="primes-container">
+                    <div class="primes-list" id="primesList">
+                        <div class="loading" id="loadingMessage" style="display: none;">Calculando números primos...</div>
+                    </div>
+                </div>
+                <div id="errorMessage" class="error" style="display: none;"></div>
+            </div>
+            
+            <div class="info-section">
+                <h3>O que são números primos?</h3>
+                <p>Números primos são números naturais maiores que 1 que possuem apenas dois divisores: 1 e ele mesmo.</p>
+                <p>Exemplos: 2, 3, 5, 7, 11, 13, 17, 19, 23, ...</p>
+                <p>Este gerador usa o algoritmo <strong>Crivo de Eratóstenes</strong> para encontrar todos os números primos até o limite especificado de forma eficiente.</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Gerador de Números Primos &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const limitInput = document.getElementById('limitInput');
+            const generateBtn = document.getElementById('generateBtn');
+            const primesList = document.getElementById('primesList');
+            const countElement = document.getElementById('count');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Função para gerar números primos usando o Crivo de Eratóstenes
+            function generatePrimes(limit) {
+                // Validação básica
+                if (limit < 2) return [];
+                
+                // Inicializa um array com true para todos os números de 0 a limite
+                const sieve = new Array(limit + 1).fill(true);
+                sieve[0] = sieve[1] = false; // 0 e 1 não são primos
+                
+                // Aplica o Crivo de Eratóstenes
+                for (let i = 2; i * i <= limit; i++) {
+                    if (sieve[i]) {
+                        // Marca todos os múltiplos de i como não primos
+                        for (let j = i * i; j <= limit; j += i) {
+                            sieve[j] = false;
+                        }
+                    }
+                }
+                
+                // Coleta todos os números primos
+                const primes = [];
+                for (let i = 2; i <= limit; i++) {
+                    if (sieve[i]) {
+                        primes.push(i);
+                    }
+                }
+                
+                return primes;
+            }
+
+            // Função para exibir os números primos
+            function displayPrimes(primes) {
+                primesList.innerHTML = '';
+                
+                if (primes.length === 0) {
+                    primesList.innerHTML = '<div class="loading">Nenhum número primo encontrado</div>';
+                    return;
+                }
+                
+                primes.forEach(prime => {
+                    const primeElement = document.createElement('div');
+                    primeElement.className = 'prime-number';
+                    primeElement.textContent = prime;
+                    primesList.appendChild(primeElement);
+                });
+            }
+
+            // Event listener para o botão de gerar
+            generateBtn.addEventListener('click', function() {
+                // Limpa mensagens de erro
+                errorMessage.style.display = 'none';
+                
+                // Obtém e valida o valor do limite
+                const limit = parseInt(limitInput.value);
+                
+                if (isNaN(limit) || limit < 2) {
+                    errorMessage.textContent = 'Por favor, insira um número válido maior ou igual a 2.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                if (limit > 100000) {
+                    errorMessage.textContent = 'Para melhor performance, por favor use um limite menor que 100.000.';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Exibe mensagem de carregamento
+                loadingMessage.style.display = 'block';
+                primesList.innerHTML = '';
+                
+                // Usa setTimeout para permitir que a interface atualize antes do cálculo pesado
+                setTimeout(() => {
+                    try {
+                        const primes = generatePrimes(limit);
+                        displayPrimes(primes);
+                        countElement.textContent = primes.length;
+                    } catch (error) {
+                        errorMessage.textContent = 'Ocorreu um erro ao calcular os números primos.';
+                        errorMessage.style.display = 'block';
+                    } finally {
+                        loadingMessage.style.display = 'none';
+                    }
+                }, 10);
+            });
+
+            // Permite pressionar Enter para gerar
+            limitInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    generateBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
